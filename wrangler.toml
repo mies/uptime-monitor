@@ -1,12 +1,21 @@
-name = "honc-d1-template"
+name = "uptime-monitor"
 compatibility_date = "2024-11-11"
 compatibility_flags = [ "nodejs_compat" ]
 
+[durable_objects]
+bindings = [
+  { name = "SCHEDULED_MONITOR", class_name = "Monitor" }
+]
+
 [[d1_databases]]
 binding = "DB"
-database_name = "honc-d1-database"
-database_id = "local-honc-d1-database"
+database_name = "uptime-d1-database"
+database_id = "local-uptime-d1-database"
 migrations_dir = "drizzle/migrations"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Monitor"]
 
 # [vars]
 # MY_VAR = "my-variable"

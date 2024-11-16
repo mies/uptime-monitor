@@ -53,7 +53,7 @@ app.post("/api/website", async (c) => {
     const monitor = c.env.SCHEDULED_MONITOR.get(
       c.env.SCHEDULED_MONITOR.idFromName(newWebsite.id.toString())
     );
-    await monitor.fetch(new Request('https://monitor/schedule'));
+    await monitor.fetch(new Request('https://monitor/schedule?websiteId=' + newWebsite.id));
 
     return c.json(newWebsite);
   } catch (error) {
