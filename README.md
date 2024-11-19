@@ -27,7 +27,7 @@ A serverless website monitoring application built with the HONC stack (Hono, Ope
 
 ```#
 ├── src
-│   ├── index.ts # Hono app entry point
+│   ├── index.tsx # Hono app entry point
 │   └── db
 │       └── schema.ts # Database schema
 ├── .dev.vars.example # Example .dev.vars file

@@ -1,19 +1,14 @@
 import { instrument } from "@fiberplane/hono-otel";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import * as schema from "./db/schema";
-import { eq, desc, sql, and } from "drizzle-orm";
-import { Monitor } from './monitor';
-import { Layout } from "./components/layout";
+import { Style } from "hono/css";
+import { jsxRenderer } from "hono/jsx-renderer";
 
-import { css, cx } from "hono/css";
-import { jsx } from "hono/jsx";
-import { html } from "hono/html";
 import { WebsiteList } from "./components/WebsiteList";
-import type { JSX } from "hono/jsx";
-import type { websites } from "./db/schema";
-
+import * as schema from "./db/schema";
+import { Monitor } from "./monitor";
 
 type Bindings = {
   DB: D1Database;
@@ -25,39 +20,35 @@ const app = new Hono<{ Bindings: Bindings }>();
 // Enable CORS
 app.use('/*', cors())
 
-app.get("/", async (c) => {
-  const db = drizzle(c.env.DB);
-  const websites = await db.select().from(schema.websites);
-  return c.html(
-    html`<!doctype html>
-<html>
-  <head>
-    <title>Website Monitor</title>
-    <meta charset="utf-8">
-    <style>
-      body {
-        background-color: black;
-        color: grey;
-      }
-    </style>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      ${websites.map(website => html`
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <span>${website.name}</span>
-          <span>-</span>
-          <a href="${website.url}" target="_blank" rel="noopener noreferrer" style="color: #2563eb;">${website.url}</a>
-          <span>(Checking every ${website.checkInterval} seconds)</span>
-        </div>
-      `)}
-    </div>
-  </body>
-</html>`
-  )
-});
-
+app.get(
+  "/",
+  jsxRenderer(
+    ({ children }) => {
+      return (
+        <html lang="en">
+          <head>
+            <title>Website Monitor</title>
+            <meta charset="utf-8" />
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+            <Style />
+          </head>
+          <body>
+            <main>{children}</main>
+          </body>
+        </html>
+      );
+    },
+    { docType: true }
+  ),
+  async (c) => {
+    const db = drizzle(c.env.DB);
+    const websites = await db.select().from(schema.websites);
+    return c.render(<WebsiteList websites={websites} />);
+  }
+);
 
 // CRUD for Websites
 app.get("/api/websites", async (c) => {
