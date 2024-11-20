@@ -1,10 +1,14 @@
 import { instrument } from "@fiberplane/hono-otel";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { Style } from "hono/css";
+import { jsxRenderer } from "hono/jsx-renderer";
+
+import { WebsiteList } from "./components/WebsiteList";
 import * as schema from "./db/schema";
-import { eq, desc, sql, and } from "drizzle-orm";
-import { Monitor } from './monitor';
+import { Monitor } from "./monitor";
 
 type Bindings = {
   DB: D1Database;
@@ -16,10 +20,35 @@ const app = new Hono<{ Bindings: Bindings }>();
 // Enable CORS
 app.use('/*', cors())
 
-app.get("/", (c) => {
-  return c.text("Honc from above! ☁️🪿");
-});
-
+app.get(
+  "/",
+  jsxRenderer(
+    ({ children }) => {
+      return (
+        <html lang="en">
+          <head>
+            <title>Website Monitor</title>
+            <meta charset="utf-8" />
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+            <Style />
+          </head>
+          <body>
+            <main>{children}</main>
+          </body>
+        </html>
+      );
+    },
+    { docType: true }
+  ),
+  async (c) => {
+    const db = drizzle(c.env.DB);
+    const websites = await db.select().from(schema.websites);
+    return c.render(<WebsiteList websites={websites} />);
+  }
+);
 
 // CRUD for Websites
 app.get("/api/websites", async (c) => {

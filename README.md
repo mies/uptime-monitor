@@ -1,17 +1,33 @@
-## 🪿 HONC
+## 🪿 Website Uptime Monitor
 
-This is a project created with the `create-honc-app` template. 
+A serverless website monitoring application built with the HONC stack (Hono, OpenTelemetry, and Cloudflare). This application allows you to monitor the uptime of websites by performing periodic health checks and storing the results in a D1 database.
 
-Learn more about the HONC stack on the [website](https://honc.dev) or the main [repo](https://github.com/fiberplane/create-honc-app).
+### Features
 
-### Getting started
-[D1](https://developers.cloudflare.com/d1/) is Cloudflare's serverless SQL database. Running HONC with a D1 database involves two key steps: first, setting up the project locally, and second, deploying it in production. You can spin up your D1 database locally using Wrangler. If you're planning to deploy your application for production use, ensure that you have created a D1 instance in your Cloudflare account.
+- Monitor multiple websites simultaneously
+- Configurable check intervals per website
+- Track response times and HTTP status codes
+- Calculate uptime percentages
+- RESTful API for managing monitored websites
+- Simple web interface to view monitored sites
 
-### Project structure
+### Technology Stack
+
+- **Hono**: Lightweight web framework for Cloudflare Workers
+- **D1**: Cloudflare's serverless SQL database
+- **Drizzle ORM**: Type-safe database toolkit
+- **Durable Objects**: For managing persistent monitoring schedules
+- **OpenTelemetry**: For observability and monitoring
+
+### Getting Started
+
+[D1](https://developers.cloudflare.com/d1/) is Cloudflare's serverless SQL database. Running this application involves two key steps: first, setting up the project locally, and second, deploying it in production.
+
+### Project Structure
 
 ```#
 ├── src
-│   ├── index.ts # Hono app entry point
+│   ├── index.tsx # Hono app entry point
 │   └── db
 │       └── schema.ts # Database schema
 ├── .dev.vars.example # Example .dev.vars file
